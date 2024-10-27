@@ -1,8 +1,9 @@
 const buttons = document.querySelectorAll("button");
 const displayText = document.querySelector("#display-text");
 const calculator = document.querySelector(".calculator");
-const operators = ["+", "-", "*", "/", "%", "√"];
+const operators = ["+", "-", "*", "/", "%", "s"];
 const visibleInputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
+const hiddenInputs = ["Delete", "Backspace", "Enter"];
 
 let numberOne = null;
 let numberTwo = null;
@@ -17,11 +18,64 @@ const reinitAll = () => {
   displayScreen = "";
 };
 
-calculator.addEventListener("keyup", (event) => {
+document.body.addEventListener("keyup", (event) => {
   const pressed = event.key;
-  console.log(visibleInputs.includes(pressed));
-  if (visibleInputs.includes(pressed)) {
-    displayScreen += pressed;
+  if (visibleInputs.includes(pressed) && displayScreen.length < 10) {
+    if (pressed === ".") {
+      checkFloatPoint();
+    } else {
+      concNumber(pressed);
+    }
+    displayText.textContent = `${displayScreen}`;
+  }
+
+  if (pressed === hiddenInputs[0]) {
+    reinitAll();
+    displayText.textContent = "0";
+  }
+
+  if (pressed === hiddenInputs[1]) {
+    if (displayScreen.substring(0, displayScreen.length - 1) === "") {
+      displayScreen = "0";
+    } else {
+      displayScreen = displayScreen.substring(0, displayScreen.length - 1);
+    }
+    displayText.textContent = `${displayScreen}`;
+  }
+
+  if (operators.includes(pressed)) {
+    if (!numberOne) {
+      numberOne = convertDisplayToNumber(displayScreen);
+      operator = pressed;
+      displayScreen = "";
+      if (operator === "s") {
+        if ((squareRoot(numberOne) % 1).toString().length > 6) {
+          displayText.textContent = `${squareRoot(numberOne).toPrecision(10)}`;
+        } else {
+          displayText.textContent = `${squareRoot(numberOne)}`;
+        }
+        reinitAll();
+        displayScreen = displayText.textContent;
+      }
+    } else if (numberOne && displayScreen !== "") {
+      numberTwo = convertDisplayToNumber(displayScreen);
+      operate(numberOne, numberTwo, operator);
+      operator = pressed;
+      numberOne = convertDisplayToNumber(displayText.textContent);
+      numberTwo = null;
+      displayScreen = "";
+    }
+  }
+
+  if (pressed === hiddenInputs[2]) {
+    if (numberOne && operator !== "") {
+      numberTwo = convertDisplayToNumber(displayScreen);
+      operate(numberOne, numberTwo, operator);
+      reinitAll();
+      displayScreen = displayText.textContent;
+    } else {
+      return;
+    }
   }
 });
 
@@ -59,7 +113,7 @@ buttons.forEach((button) => {
         numberOne = convertDisplayToNumber(displayScreen);
         operator = clicked.textContent;
         displayScreen = "";
-        if (operator === "√") {
+        if (operator === "s") {
           if ((squareRoot(numberOne) % 1).toString().length > 6) {
             displayText.textContent = `${squareRoot(numberOne).toPrecision(
               10
@@ -133,7 +187,7 @@ const operate = (a, b, operator) => {
       displayText.textContent = `${multiply(a, b)}`;
       break;
     case "/":
-      if ((divide(a, b) % 1).toString.length > 6) {
+      if ((divide(a, b) % 1).toString().length > 6) {
         displayText.textContent = `${divide(a, b).toPrecision(10)}`;
       } else {
         displayText.textContent = `${divide(a, b)}`;
