@@ -15,24 +15,6 @@ const reinitAll = () => {
   displayScreen = "";
 };
 
-const checkFloatPoint = () => {
-  if (displayScreen.includes(".")) {
-    return;
-  } else if (!displayScreen) {
-    displayScreen = "0.";
-  } else {
-    displayScreen += ".";
-  }
-};
-
-const concNumber = (number) => {
-  if (displayScreen === "0") {
-    displayScreen = number;
-  } else {
-    displayScreen += number;
-  }
-};
-
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
     const clicked = event.currentTarget;
@@ -66,13 +48,27 @@ buttons.forEach((button) => {
       if (!numberOne) {
         numberOne = convertDisplayToNumber(displayScreen);
         operator = clicked.textContent;
+        displayScreen = "";
+
         if (operator === "√") {
-          //let resultStrLength = Math.round(squareRoot(numberOne)).toString().length;
-          displayText.textContent = `${squareRoot(numberOne).toPrecision(10)}`;
+          if ((squareRoot(numberOne) % 1).toString().length > 6) {
+            displayText.textContent = `${squareRoot(numberOne).toPrecision(
+              10
+            )}`;
+          } else {
+            displayText.textContent = `${squareRoot(numberOne)}`;
+          }
           reinitAll();
+          displayScreen = displayText.textContent;
         }
+      } else if (numberOne && displayScreen !== "") {
+        numberTwo = convertDisplayToNumber(displayScreen);
+        operate(numberOne, numberTwo, operator);
+        operator = clicked.textContent;
+        numberOne = convertDisplayToNumber(displayText.textContent);
+        numberTwo = null;
+        displayScreen = "";
       }
-      displayScreen = "";
     }
 
     if (clicked.getAttribute("id") === "operateBtn") {
@@ -81,12 +77,33 @@ buttons.forEach((button) => {
 
         operate(numberOne, numberTwo, operator);
         reinitAll();
+        displayScreen = displayText.textContent;
       } else {
         return;
       }
     }
   });
 });
+
+//ALL MATH FUNCTION DEFINITIONS
+
+const checkFloatPoint = () => {
+  if (displayScreen.includes(".")) {
+    return;
+  } else if (!displayScreen) {
+    displayScreen = "0.";
+  } else {
+    displayScreen += ".";
+  }
+};
+
+const concNumber = (number) => {
+  if (displayScreen === "0") {
+    displayScreen = number;
+  } else {
+    displayScreen += number;
+  }
+};
 
 const convertDisplayToNumber = (number) => {
   if (number.includes(".")) {
