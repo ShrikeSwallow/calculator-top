@@ -49,7 +49,6 @@ buttons.forEach((button) => {
         numberOne = convertDisplayToNumber(displayScreen);
         operator = clicked.textContent;
         displayScreen = "";
-
         if (operator === "√") {
           if ((squareRoot(numberOne) % 1).toString().length > 6) {
             displayText.textContent = `${squareRoot(numberOne).toPrecision(
@@ -74,7 +73,6 @@ buttons.forEach((button) => {
     if (clicked.getAttribute("id") === "operateBtn") {
       if (numberOne && operator !== "") {
         numberTwo = convertDisplayToNumber(displayScreen);
-
         operate(numberOne, numberTwo, operator);
         reinitAll();
         displayScreen = displayText.textContent;
