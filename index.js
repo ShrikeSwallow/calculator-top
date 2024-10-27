@@ -1,6 +1,8 @@
 const buttons = document.querySelectorAll("button");
 const displayText = document.querySelector("#display-text");
+const calculator = document.querySelector(".calculator");
 const operators = ["+", "-", "*", "/", "%", "√"];
+const visibleInputs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
 
 let numberOne = null;
 let numberTwo = null;
@@ -14,6 +16,14 @@ const reinitAll = () => {
   operator = "";
   displayScreen = "";
 };
+
+calculator.addEventListener("keyup", (event) => {
+  const pressed = event.key;
+  console.log(visibleInputs.includes(pressed));
+  if (visibleInputs.includes(pressed)) {
+    displayScreen += pressed;
+  }
+});
 
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
